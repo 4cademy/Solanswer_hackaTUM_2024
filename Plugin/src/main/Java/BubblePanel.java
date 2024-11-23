@@ -1,5 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 
 public class BubblePanel extends JPanel {
     private final String message;
@@ -9,70 +12,42 @@ public class BubblePanel extends JPanel {
         this.message = message;
         this.isUserMessage = isUserMessage;
         setOpaque(false); // Transparent background
+        setLayout(new BorderLayout());
+
+        // Parse Markdown to HTML
+        MutableDataSet options = new MutableDataSet();
+        Parser parser = Parser.builder(options).build();
+        HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+        String htmlMessage = renderer.render(parser.parse(message));
+
+        // Create JEditorPane to display HTML
+        JEditorPane editorPane = new JEditorPane("text/html", htmlMessage);
+        editorPane.setEditable(false);
+        editorPane.setOpaque(false);
+        editorPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Set background color based on message type
+        editorPane.setBackground(isUserMessage ? new Color(173, 216, 230) : new Color(211, 211, 211));
+
+        add(editorPane, BorderLayout.CENTER);
     }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        // Set bubble color
-        g2d.setColor(isUserMessage ? new Color(173, 216, 230) : new Color(211, 211, 211)); // Light blue for user, light gray for bot
-
-        // Calculate bubble size based on message length
-        FontMetrics fm = g2d.getFontMetrics();
-        int textWidth = fm.stringWidth(message);
-        int textHeight = fm.getHeight();
-
-        int padding = 15; // Padding around the text
-        int tailSize = 10; // Tail size
-        int bubbleWidth = textWidth + padding * 2;
-        int bubbleHeight = textHeight + padding * 2;
-
-        // Add more space if the message is multiline (to accommodate the text wrapping)
-        String[] lines = message.split("\n");
-        bubbleHeight = lines.length * fm.getHeight() + padding * 2; // Adjust for multiline
-
-        // Draw bubble with rounded corners
-        int arc = 20; // Roundness of the bubble
-        int bubbleX = isUserMessage ? 10 : tailSize + 10; // X position for bubble
-        int bubbleY = 0; // Y position for bubble
-
-        g2d.fillRoundRect(bubbleX, bubbleY, bubbleWidth, bubbleHeight - tailSize, arc, arc);
-
-        // Bubble tail
-        int[] xPoints = isUserMessage
-                ? new int[]{bubbleX + bubbleWidth - tailSize - 10, bubbleX + bubbleWidth - 10, bubbleX + bubbleWidth - tailSize - 10}
-                : new int[]{bubbleX + tailSize + 10, bubbleX + 10, bubbleX + tailSize + 10};
-        int[] yPoints = {bubbleY + bubbleHeight - tailSize, bubbleY + bubbleHeight - tailSize, bubbleY + bubbleHeight};
-        g2d.fillPolygon(xPoints, yPoints, 3);
-
-        // Draw the message inside the bubble
-        g2d.setColor(Color.BLACK);
-        g2d.setFont(getFont());
-
-        // Handle drawing multiple lines
-        int y = fm.getAscent() + 10;
-        for (String line : lines) {
-            g2d.drawString(line, bubbleX + padding, y);
-            y += fm.getHeight();
-        }
-    }
-
     @Override
     public Dimension getPreferredSize() {
-        // Calculate preferred size dynamically based on message length
         FontMetrics fm = getFontMetrics(getFont());
-        int textWidth = fm.stringWidth(message);
-        int textHeight = fm.getHeight();
+        int maxWidth = 0;
+        int totalHeight = 0;
         int padding = 20; // Padding around the text
 
-        // Handle multiline message height
+        // Calculate the width and height based on each line
         String[] lines = message.split("\n");
-        int bubbleHeight = lines.length * textHeight + padding * 2;
-        int bubbleWidth = textWidth + padding * 2;
+        for (String line : lines) {
+            int lineWidth = fm.stringWidth(line);
+            maxWidth = Math.max(maxWidth, lineWidth);
+            totalHeight += fm.getHeight();
+        }
+
+        int bubbleWidth = maxWidth + padding * 2;
+        int bubbleHeight = totalHeight + padding * 2;
 
         return new Dimension(bubbleWidth, bubbleHeight);
     }
