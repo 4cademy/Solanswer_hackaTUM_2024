@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class SimpleChatBotAction extends AnAction {
-
     @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getProject();
@@ -19,7 +18,7 @@ public class SimpleChatBotAction extends AnAction {
         private final SimpleChatBotPanel simpleChatBotPanel;
 
         protected SimpleChatBotDialog() {
-            super(true); // use current window as parent
+            super(true); // Use current window as parent
             simpleChatBotPanel = new SimpleChatBotPanel();
             init();
             setTitle("JetSetters Chat Bot");
