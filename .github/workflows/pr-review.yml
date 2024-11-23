@@ -1,10 +1,11 @@
 name: PR Code Review with LLM
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize]
 
 permissions:
+  contents: read
   pull-requests: write
 
 jobs:
@@ -14,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
 
       - name: Get changed files
         id: changed-files
