@@ -25,6 +25,11 @@ jobs:
             cat "$file" >> code_changes.txt
           done
 
+      - name: Debug input to API
+        run: |
+          echo "Input to API:"
+          cat code_changes.txt
+
       - name: Send to LLM API
         id: call-llm
         run: |
@@ -34,6 +39,11 @@ jobs:
               "question": "You are an expert pull request reviewer. Search for similar code and analyze the 
           following code changes for inefficiences, missing documentation and insecurities: ```$(cat code_changes.txt)```"
             }' > llm_response.json
+
+      - name: Debug API response
+        run: |
+          echo "Raw API response:"
+          cat llm_response.json
 
       - name: Parse API response
         id: parse-response
