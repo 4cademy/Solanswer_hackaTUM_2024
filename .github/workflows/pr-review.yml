@@ -20,9 +20,11 @@ jobs:
 
       - name: Extract changed files content
         run: |
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          echo "" > code_changes.txt
+          IFS=',' read -r -a files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
+          for file in "${files[@]}"; do
             echo "--- FILE: $file ---" >> code_changes.txt
-            cat "$file" >> code_changes.txt
+            cat "$file" >> code_changes.txt || echo "[File not found: $file]" >> code_changes.txt
           done
 
       - name: Debug input to API
@@ -32,17 +34,17 @@ jobs:
 
       - name: Escape code changes
         run: |
-          content=$(cat code_changes.txt | jq -Rsa '.')
-          echo "escaped_content=$content" >> $GITHUB_ENV
+          escaped_content=$(cat code_changes.txt | jq -Rsa '.')
+          echo "escaped_content=$escaped_content" >> $GITHUB_ENV
 
       - name: Send to LLM API
         id: call-llm
         run: |
           curl -X POST https://solana-chat-60707405365.us-central1.run.app \
             -H "Content-Type: application/json" \
-            -d '{
-              "question": 'You are an expert pull request reviewer. Search for similar code and analyze the following code changes for inefficiencies, missing documentation and insecurities. Here is the code "${escaped_content}"'
-            }' > llm_response.json
+            -d "{
+              \"question\": \"You are an expert pull request reviewer. Search for similar code and analyze the following code changes for inefficiencies, missing documentation, and insecurities. Here is the code: ${escaped_content}\"
+            }" > llm_response.json
 
       - name: Debug API response
         run: |
