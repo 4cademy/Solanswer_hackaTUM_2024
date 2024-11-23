@@ -5,4 +5,5 @@
 4. The RAGged LLM can now be accessed by the link provided by the Cloud Function, e.g. https://solana-chat-60707405365.us-central1.run.app 
 
 # Using the RAGged LLM
-Example: ```curl -X POST https://solana-chat-60707405365.us-central1.run.app -H "Content-Type: application/json" -d '{"question":"What are the parameters for the sendTransaction function?"}'```
+Example: 
+```curl -X POST https://solana-chat-60707405365.us-central1.run.app -H "Content-Type: application/json" -d '{"question":"What are the parameters for the sendTransaction function?"}'```
