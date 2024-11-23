@@ -54,7 +54,8 @@ jobs:
       - name: Parse API response
         id: parse-response
         run: |
-          response=$(cat llm_response.json)
+          # Extract the first element of the 'parts' array from the response JSON
+          response=$(jq -r '.answer.parts[0].text' llm_response.json)
           echo "response=$response" >> $GITHUB_ENV
 
       - name: Create PR comment
