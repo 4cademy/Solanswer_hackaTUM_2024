@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
 
 public class SimpleChatBotPanel {
     private final JPanel mainPanel;
@@ -84,8 +85,16 @@ public class SimpleChatBotPanel {
         if (!inputText.isEmpty()) {
             // Append the user's message
             appendMessage("You: " + inputText, true); // User's message
-            // Simulate bot response
-            appendMessage("Bot: You said: " + inputText, false); // Bot's response
+
+            // Send the question to the backend and get the response
+            try {
+                ChatBotService chatBotService = new ChatBotService();
+                String response = chatBotService.sendQuestion(inputText);
+                appendMessage("Bot: " + response, false); // Bot's response
+            } catch (IOException e) {
+                appendMessage("Bot: Error communicating with the server.", false);
+            }
+
             inputTextArea.setText(""); // Clear the input field
         }
     }
