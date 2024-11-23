@@ -44,4 +44,9 @@ tasks {
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
     }
+
+    dependencies {
+        implementation("com.vladsch.flexmark:flexmark-all:0.62.2")
+        implementation("com.google.code.gson:gson:2.8.9")
+    }
 }
