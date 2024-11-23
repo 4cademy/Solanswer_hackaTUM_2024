@@ -4,106 +4,117 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 
+/**
+ * A custom panel for displaying chat bubbles with Markdown support.
+ */
 public class BubblePanel extends JPanel {
     private final String message;
     private final boolean isUserMessage;
-    private static final int MAX_BUBBLE_WIDTH = 400; // Fixed bubble width
+    private static final int MAX_BUBBLE_WIDTH = 800; // Maximum bubble width
 
+    /**
+     * Constructs a BubblePanel with a message and type (user or bot).
+     *
+     * @param message The text to display in the bubble.
+     * @param isUserMessage Indicates whether the message is from the user.
+     */
     public BubblePanel(String message, boolean isUserMessage) {
         this.message = message;
         this.isUserMessage = isUserMessage;
-        setOpaque(false); // Transparent background
 
+        // Panel settings
+        setOpaque(false); // Make the background transparent
+        setLayout(new BorderLayout());
+
+        // Create and style the bubble content
+        JEditorPane editorPane = createStyledEditorPane(message);
+        add(editorPane, BorderLayout.CENTER);
+    }
+
+    /**
+     * Creates a styled JEditorPane for rendering the bubble's content.
+     *
+     * @param message The message to render in the bubble.
+     * @return A styled JEditorPane.
+     */
+    private JEditorPane createStyledEditorPane(String message) {
         // Parse Markdown to HTML
         MutableDataSet options = new MutableDataSet();
         Parser parser = Parser.builder(options).build();
         HtmlRenderer renderer = HtmlRenderer.builder(options).build();
         String htmlMessage = renderer.render(parser.parse(message));
 
-        // Add CSS to ensure text is black
-        String styledHtmlMessage = "<html><body style='color: black;'>" + htmlMessage + "</body></html>";
-
-        // Create JEditorPane to display HTML
-        JEditorPane editorPane = new JEditorPane("text/html", styledHtmlMessage);
+        // Configure the JEditorPane
+        JEditorPane editorPane = new JEditorPane("text/html", htmlMessage);
         editorPane.setEditable(false);
         editorPane.setOpaque(false);
-        editorPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        editorPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 30));
+        editorPane.setPreferredSize(new Dimension(MAX_BUBBLE_WIDTH, 0)); // Set preferred size for wrapping
+        editorPane.setSize(new Dimension(MAX_BUBBLE_WIDTH, editorPane.getPreferredSize().height)); // Ensure it can grow vertically
 
-        // Set layout and add editorPane
-        setLayout(new BorderLayout());
-        add(editorPane, BorderLayout.CENTER);
-    }
+        // Set bubble background color based on message type
+        Color bubbleColor = isUserMessage ? new Color(173, 216, 230) : new Color(211, 211, 211);
+        editorPane.setBackground(bubbleColor);
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+        // Add CSS to enable word wrapping
+        editorPane.setContentType("text/html");
+        editorPane.setText("<html><body style='word-wrap: break-word;'>" + htmlMessage + "</body></html>");
 
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        // Apply CSS to ensure text is black
+        editorPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+        editorPane.setContentType("text/html");
+        editorPane.setText("<html><body style='color: black; font-family: Arial;'>" + htmlMessage + "</body></html>");
 
-        // Set bubble color
-        g2d.setColor(isUserMessage ? new Color(173, 216, 230) : new Color(211, 211, 211)); // Light blue for user, light gray for bot
-
-        // Calculate bubble size
-        FontMetrics fm = g2d.getFontMetrics();
-        int padding = 15; // Padding around the text
-        int tailSize = 10; // Tail size
-
-        // Calculate wrapped text dimensions
-        String[] lines = wrapText(message, fm, MAX_BUBBLE_WIDTH - padding * 2);
-        int bubbleWidth = Math.min(MAX_BUBBLE_WIDTH, fm.stringWidth(message) + padding * 2);
-        int bubbleHeight = lines.length * fm.getHeight() + padding * 2;
-
-        // Draw bubble with rounded corners
-        int arc = 20; // Roundness of the bubble
-        int bubbleX = isUserMessage ? 10 : tailSize + 10; // X position for bubble
-        int bubbleY = 0; // Y position for bubble
-
-        g2d.fillRoundRect(bubbleX, bubbleY, bubbleWidth, bubbleHeight - tailSize, arc, arc);
-
-        // Bubble tail
-        int[] xPoints = isUserMessage
-                ? new int[]{bubbleX + bubbleWidth - tailSize - 10, bubbleX + bubbleWidth - 10, bubbleX + bubbleWidth - tailSize - 10}
-                : new int[]{bubbleX + tailSize + 10, bubbleX + 10, bubbleX + tailSize + 10};
-        int[] yPoints = {bubbleY + bubbleHeight - tailSize, bubbleY + bubbleHeight - tailSize, bubbleY + bubbleHeight};
-        g2d.fillPolygon(xPoints, yPoints, 3);
+        return editorPane;
     }
 
     @Override
     public Dimension getPreferredSize() {
-        FontMetrics fm = getFontMetrics(getFont());
+        // Calculate dimensions for the bubble
+        FontMetrics fontMetrics = getFontMetrics(getFont());
         int padding = 20; // Padding around the text
 
-        // Calculate preferred size based on wrapped text
-        String[] lines = wrapText(message, fm, MAX_BUBBLE_WIDTH - padding * 2);
-        int bubbleHeight = lines.length * fm.getHeight() + padding * 2;
-        int bubbleWidth = Math.min(MAX_BUBBLE_WIDTH, fm.stringWidth(message) + padding * 2);
+        int maxWidth = 0;
+        int totalHeight = 0;
+
+        for (String line : message.split("\n")) {
+            int lineWidth = fontMetrics.stringWidth(line);
+            maxWidth = Math.max(maxWidth, lineWidth);
+            totalHeight += fontMetrics.getHeight();
+        }
+
+        int bubbleWidth = Math.min(maxWidth + padding * 2, MAX_BUBBLE_WIDTH);
+        int bubbleHeight = totalHeight + padding * 2;
 
         return new Dimension(bubbleWidth, bubbleHeight);
     }
 
-    // Utility method to wrap the text based on the given width
-    private String[] wrapText(String text, FontMetrics fm, int maxWidth) {
-        String[] words = text.split(" ");
-        StringBuilder currentLine = new StringBuilder();
-        java.util.List<String> lines = new java.util.ArrayList<>();
+    /**
+     * Paints the background bubble shape.
+     *
+     * @param g The graphics context.
+     */
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
 
-        for (String word : words) {
-            if (fm.stringWidth(currentLine + " " + word) <= maxWidth) {
-                if (currentLine.length() > 0) {
-                    currentLine.append(" ");
-                }
-                currentLine.append(word);
-            } else {
-                lines.add(currentLine.toString());
-                currentLine = new StringBuilder(word);
-            }
-        }
+        // Enable anti-aliasing for smooth edges
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        if (currentLine.length() > 0) {
-            lines.add(currentLine.toString());
-        }
+        // Determine bubble color
+        Color bubbleColor = isUserMessage ? new Color(173, 216, 230) : new Color(211, 211, 211);
 
-        return lines.toArray(new String[0]);
+        // Calculate the bubble shape
+        int arcSize = 20; // Rounded corners
+        Insets insets = getInsets();
+        int x = insets.left;
+        int y = insets.top;
+        int width = getWidth() - insets.left - insets.right;
+        int height = getHeight() - insets.top - insets.bottom;
+
+        // Draw the bubble
+        g2.setColor(bubbleColor);
+        g2.fillRoundRect(x, y, width, height, arcSize, arcSize);
     }
 }
