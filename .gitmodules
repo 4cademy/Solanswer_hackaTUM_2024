@@ -1,0 +1,3 @@
+[submodule "solanswer_website"]
+	path = solanswer_website
+	url = git@github.com:4cademy/solanswer_website.git
