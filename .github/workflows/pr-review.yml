@@ -44,11 +44,14 @@ jobs:
       - name: Send to LLM API
         id: call-llm
         run: |
+          # Properly escape the content for JSON payload
+          escaped_question=$(jq -n --arg content "$escaped_content" \
+            '{"question": "You are an expert pull request reviewer. Search for similar code and analyze the following code changes for inefficiencies, missing documentation, and insecurities. Here is the code: \($content)"}')
+          
+          # Send the API request
           curl -X POST https://solana-chat-60707405365.us-central1.run.app \
             -H "Content-Type: application/json" \
-            -d "{
-              \"question\": \"You are an expert pull request reviewer. Search for similar code and analyze the following code changes for inefficiencies, missing documentation, and insecurities. Here is the code: ${{ env.escaped_content }}\"
-            }" > llm_response.json
+            -d "$escaped_question" > llm_response.json
 
       - name: Debug API response
         run: |
