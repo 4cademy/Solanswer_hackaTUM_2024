@@ -1,7 +1,11 @@
 # JetSetters
 
 ## Overview
-JetSetters is a JetBrains IDE plugin designed to provide developers with instant AI-driven documentation and code insights. Utilizing Google Cloud's Retrieval Augmented Generation (RAG) system, JetSetters answers coding questions by accessing relevant resources and documentation, particularly focused on the Solana blockchain ecosystem.
+**This project consists of three parts.**
+
+1) A workflow to enhance LLMs with documentation and ecosystem-related data via Google Cloud's Retrieval Augmented Generation (RAG) system. As an example, we enhance `Gemini 1.5 Pro` with the `Solana Developer Documentation`.
+2) The `JetSetters Plugin` hocks into the Google Cloud backend to make use of our enhanced AI model. It is designed to provide developers with instant AI-driven documentation and code insights directly within the JetBrains IDEs. (see installation guide below)
+3) The `Solanswer Website` (https://solanswer.vercel.app/) provides a web version of our AI agent. It is capable of answering in-depth questions regarding the Solana Documentation.
 
 ## Features
 - **Instant Documentation Access:** Ask coding questions and receive real-time answers from the Solana Developer Docs or all other resources.
@@ -9,7 +13,7 @@ JetSetters is a JetBrains IDE plugin designed to provide developers with instant
 - **Secure Coding Guidance:** Provides examples and resources for writing secure code in blockchain environments.
 - **User-Friendly Interface:** Simple input/output fields for engaging with the AI chatbot.
 
-## Installation
+## <a name="Installation"></a> Installation of `JetSetters Plugin`
 
 ### Prerequisites
 - A compatible JetBrains IDE (e.g., IntelliJ IDEA, PyCharm, etc.)
