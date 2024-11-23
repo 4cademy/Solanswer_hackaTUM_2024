@@ -47,7 +47,7 @@ jobs:
           curl -X POST https://solana-chat-60707405365.us-central1.run.app \
             -H "Content-Type: application/json" \
             -d "{
-              \"question\": \"You are an expert pull request reviewer. Search for similar code and analyze the following code changes for inefficiencies, missing documentation, and insecurities. Here is the code: print(hello world)\"
+              \"question\": \"You are an expert pull request reviewer. Search for similar code and analyze the following code changes for inefficiencies, missing documentation, and insecurities. Here is the code: ${{ env.escaped_content }}\"
             }" > llm_response.json
 
       - name: Debug API response
