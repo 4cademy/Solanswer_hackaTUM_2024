@@ -1,4 +1,4 @@
-# JetSetters
+# JetSetters x Solanswer
 
 ## Overview
 **This project consists of three parts.**
