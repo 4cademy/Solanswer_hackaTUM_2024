@@ -27,14 +27,14 @@
 2. Go to `File` > `Settings` (or `Preferences` on macOS).
 3. In the left pane, select `Plugins`.
 4. Click on the gear icon ⚙️ in the top-right corner and choose `Install Plugin from Disk...`.
-5. Navigate to the location where you downloaded the JetSetters JAR file and select it.
+5. Navigate to the location where you downloaded the JetSetters .ZIP file and select it.
 6. Click `OK` to install the plugin.
 7. Restart your IDE to activate the plugin.
 
 ## Usage
-1. After restarting, you will find the JetSetters plugin in your IDE.
-2. Open the JetSetters interface from the Plugins menu.
-3. Enter your coding question in the input field and click the **Send** button to receive an answer.
+1. After restarting, you will find the JetSetters plugin in your IDE under `Tools`.
+2. Click on `JetSetters Chat Bot` to launch it.
+3. Enter your coding question in the input field and click the **Send** button to receive an answer. (it takes a couple of seconds to get an answer).
 4. Explore the output field for documentation and helpful resources related to your query.
 
 ## Contributing
