@@ -22,7 +22,7 @@ public class SimpleChatBotAction extends AnAction {
             super(true); // use current window as parent
             simpleChatBotPanel = new SimpleChatBotPanel();
             init();
-            setTitle("Simple Chat Bot");
+            setTitle("JetSetters Chat Bot");
         }
 
         @Nullable
