@@ -56,7 +56,13 @@ jobs:
         run: |
           # Extract the first element of the 'parts' array from the response JSON
           response=$(jq -r '.answer.parts[0].text' llm_response.json)
-          echo "response=$response" >> $GITHUB_ENV
+          if [ -z "$response" ]; then
+            echo "Error: Response is empty or jq failed to parse the JSON."
+            exit 1
+          fi
+          echo "response<<EOF" >> $GITHUB_ENV
+          echo "$response" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Create PR comment
         uses: marocchino/sticky-pull-request-comment@v2
@@ -65,4 +71,6 @@ jobs:
           header: "AI Code Review"
           message: |
             ### AI Analysis
+            ```text
             ${{ env.response }}
+            ```
