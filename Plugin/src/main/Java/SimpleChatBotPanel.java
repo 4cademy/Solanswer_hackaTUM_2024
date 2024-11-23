@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class SimpleChatBotPanel {
     private final JPanel mainPanel;
-    private final JTextArea inputTextArea;  // Use JTextArea instead of JTextField
+    private final JTextArea inputTextArea;
     private final JScrollPane scrollPane;
     private final JPanel chatBoxPanel;
 
@@ -23,13 +23,13 @@ public class SimpleChatBotPanel {
 
         // Scroll panel for chat box
         scrollPane = new JScrollPane(chatBoxPanel);
-        scrollPane.setPreferredSize(new Dimension(400, 300));
+        scrollPane.setPreferredSize(new Dimension(1000, 300));
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Input field (multi-line text area)
-        inputTextArea = new JTextArea(3, 40);  // Set rows and columns for the input area
-        inputTextArea.setLineWrap(true);  // Enable line wrapping
-        inputTextArea.setWrapStyleWord(true);  // Ensure words break properly at the line end
+        inputTextArea = new JTextArea(3, 40);
+        inputTextArea.setLineWrap(true);
+        inputTextArea.setWrapStyleWord(true);
         inputTextArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
         // Add KeyListener for Enter/Shift+Enter functionality
@@ -57,7 +57,7 @@ public class SimpleChatBotPanel {
 
         // Input panel with the text area
         JPanel inputPanel = new JPanel(new BorderLayout(5, 5));
-        JScrollPane inputScrollPane = new JScrollPane(inputTextArea); // Wrap inputTextArea in JScrollPane for scroll functionality
+        JScrollPane inputScrollPane = new JScrollPane(inputTextArea);
         inputPanel.add(inputScrollPane, BorderLayout.CENTER);
 
         // Send button
@@ -84,13 +84,13 @@ public class SimpleChatBotPanel {
         String inputText = inputTextArea.getText().trim();
         if (!inputText.isEmpty()) {
             // Append the user's message
-            appendMessage("You: " + inputText, true); // User's message
+            appendMessage("You: " + inputText, true);
 
             // Send the question to the backend and get the response
             try {
                 ChatBotService chatBotService = new ChatBotService();
                 String response = chatBotService.sendQuestion(inputText);
-                appendMessage("Bot: " + response, false); // Bot's response
+                appendMessage("Bot: " + response, false);
             } catch (IOException e) {
                 appendMessage("Bot: Error communicating with the server.", false);
             }
@@ -106,8 +106,8 @@ public class SimpleChatBotPanel {
 
         // Align bubbles
         JPanel bubbleContainer = new JPanel();
-        bubbleContainer.setLayout(new BoxLayout(bubbleContainer, BoxLayout.X_AXIS));
         bubbleContainer.setOpaque(false);
+        bubbleContainer.setLayout(new FlowLayout(isUserMessage ? FlowLayout.RIGHT : FlowLayout.LEFT, 10, 10));
 
         if (isUserMessage) {
             bubbleContainer.add(Box.createHorizontalGlue()); // Align to right
