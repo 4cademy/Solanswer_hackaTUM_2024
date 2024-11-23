@@ -1,0 +1,51 @@
+name: PR Code Review with LLM
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  code-review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v34
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract changed files content
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "--- FILE: $file ---" >> code_changes.txt
+            cat "$file" >> code_changes.txt
+          done
+
+      - name: Send to LLM API
+        id: call-llm
+        run: |
+          curl -X POST https://solana-chat-60707405365.us-central1.run.app \
+            -H "Content-Type: application/json" \
+            -d '{
+              "question": "You are an expert pull request reviewer. Search for similar code and analyze the 
+          following code changes for inefficiences, missing documentation and insecurities: ```$(cat code_changes.txt)```"
+            }' > llm_response.json
+
+      - name: Parse API response
+        id: parse-response
+        run: |
+          response=$(cat llm_response.json)
+          echo "response=$response" >> $GITHUB_ENV
+
+      - name: Create PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          header: "AI Code Review"
+          message: |
+            ### AI Analysis
+            ${{ env.response }}
