@@ -27,6 +27,7 @@ public class BubblePanel extends JPanel {
         setLayout(new BorderLayout());
 
         // Create and style the bubble content
+
         JLabel label = createWrappedLabel(this.message);
         add(label, BorderLayout.CENTER);
     }
@@ -88,6 +89,7 @@ public class BubblePanel extends JPanel {
 
     @Override
     public Dimension getPreferredSize() {
+
         // Calculate the preferred size dynamically
         Component label = getComponent(0);
         Dimension size = label.getPreferredSize();
@@ -96,6 +98,7 @@ public class BubblePanel extends JPanel {
         int padding = 20;
         int width = Math.min(size.width + padding, MAX_BUBBLE_WIDTH);
         int height = size.height + padding;
+
 
         return new Dimension(width, height);
     }
@@ -110,11 +113,13 @@ public class BubblePanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
+
         // Enable anti-aliasing for smooth edges
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Determine bubble color based on the user message
         Color bubbleColor = isUserMessage ? new Color(173, 216, 230) : new Color(211, 211, 211); // Light blue for user, light gray for bot
+
 
         // Calculate the bubble shape
         int arcSize = 20; // Rounded corners
