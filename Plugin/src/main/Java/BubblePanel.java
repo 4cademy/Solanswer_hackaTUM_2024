@@ -7,12 +7,12 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 public class BubblePanel extends JPanel {
     private final String message;
     private final boolean isUserMessage;
+    private static final int MAX_BUBBLE_WIDTH = 400; // Fixed bubble width
 
     public BubblePanel(String message, boolean isUserMessage) {
         this.message = message;
         this.isUserMessage = isUserMessage;
         setOpaque(false); // Transparent background
-        setLayout(new BorderLayout());
 
         // Parse Markdown to HTML
         MutableDataSet options = new MutableDataSet();
@@ -29,8 +29,10 @@ public class BubblePanel extends JPanel {
         // Set background color based on message type
         editorPane.setBackground(isUserMessage ? new Color(173, 216, 230) : new Color(211, 211, 211));
 
+        setLayout(new BorderLayout());
         add(editorPane, BorderLayout.CENTER);
     }
+
     @Override
     public Dimension getPreferredSize() {
         FontMetrics fm = getFontMetrics(getFont());
