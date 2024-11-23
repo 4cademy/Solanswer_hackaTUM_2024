@@ -19,8 +19,8 @@
 - A compatible JetBrains IDE (e.g., IntelliJ IDEA, PyCharm, etc.)
 
 ### Downloading the Plugin
-1. **Download the JAR File:**
-   You can download the latest version of the JetSetters plugin JAR file.
+1. **Download the .zip File:**
+   You can download the latest version of the JetSetters plugin: [here](https://github.com/shumancheng/JetSetters/raw/refs/heads/main/Plugin-1.0-SNAPSHOT.zip)
 
 ### Installing the Plugin
 1. Open your JetBrains IDE.
