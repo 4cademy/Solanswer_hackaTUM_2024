@@ -19,7 +19,7 @@ public class BubblePanel extends JPanel {
      * @param isUserMessage Indicates whether the message is from the user.
      */
     public BubblePanel(String message, boolean isUserMessage) {
-        this.message = message;
+        this.message = wrapText(message); // Ensure text and code are wrapped
         this.isUserMessage = isUserMessage;
 
         // Panel settings
@@ -27,66 +27,80 @@ public class BubblePanel extends JPanel {
         setLayout(new BorderLayout());
 
         // Create and style the bubble content
-        JEditorPane editorPane = createStyledEditorPane(message);
-        add(editorPane, BorderLayout.CENTER);
+
+        JLabel label = createWrappedLabel(this.message);
+        add(label, BorderLayout.CENTER);
     }
 
     /**
-     * Creates a styled JEditorPane for rendering the bubble's content.
+     * Wraps text manually if it exceeds the maximum width. Applies to both sentences and code blocks.
      *
-     * @param message The message to render in the bubble.
-     * @return A styled JEditorPane.
+     * @param text The input message.
+     * @return A wrapped version of the message.
      */
-    private JEditorPane createStyledEditorPane(String message) {
-        // Parse Markdown to HTML
+    private String wrapText(String text) {
+        FontMetrics metrics = getFontMetrics(getFont());
+        StringBuilder wrappedText = new StringBuilder();
+        String[] lines = text.split("\n"); // Split by lines first (handles code blocks)
+
+        for (String line : lines) {
+            int lineWidth = 0;
+            String[] words = line.split(" ");
+
+            for (String word : words) {
+                int wordWidth = metrics.stringWidth(word + " ");
+                if (lineWidth + wordWidth > MAX_BUBBLE_WIDTH - 40) { // Adjust for padding
+                    wrappedText.append("<br>"); // Add line break
+                    lineWidth = 0;
+                }
+                wrappedText.append(word).append(" ");
+                lineWidth += wordWidth;
+            }
+            wrappedText.append("<br>"); // Preserve original line breaks
+        }
+
+        return wrappedText.toString().trim();
+    }
+
+    /**
+     * Creates a JLabel that wraps the text automatically within the maximum width.
+     *
+     * @param message The message to display.
+     * @return A styled JLabel with wrapped text.
+     */
+    private JLabel createWrappedLabel(String message) {
+        // Parse Markdown to plain HTML text
         MutableDataSet options = new MutableDataSet();
         Parser parser = Parser.builder(options).build();
         HtmlRenderer renderer = HtmlRenderer.builder(options).build();
         String htmlMessage = renderer.render(parser.parse(message));
 
-        // Configure the JEditorPane
-        JEditorPane editorPane = new JEditorPane("text/html", htmlMessage);
-        editorPane.setEditable(false);
-        editorPane.setOpaque(false);
-        editorPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 30));
-        editorPane.setPreferredSize(new Dimension(MAX_BUBBLE_WIDTH, 0)); // Set preferred size for wrapping
-        editorPane.setSize(new Dimension(MAX_BUBBLE_WIDTH, editorPane.getPreferredSize().height)); // Ensure it can grow vertically
+        // Configure JLabel for text wrapping
+        JLabel label = new JLabel("<html><div style='width:" + (MAX_BUBBLE_WIDTH - 20) + "px; word-wrap: break-word; white-space: pre-wrap;'>" + htmlMessage + "</div></html>");
+        label.setOpaque(false);
+        label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Set bubble background color based on message type
-        Color bubbleColor = isUserMessage ? new Color(173, 216, 230) : new Color(211, 211, 211);
-        editorPane.setBackground(bubbleColor);
+        // Set font color and alignment
+        label.setForeground(Color.BLACK);
+        label.setVerticalAlignment(SwingConstants.TOP);
 
-        // Add CSS to enable word wrapping
-        editorPane.setContentType("text/html");
-        editorPane.setText("<html><body style='word-wrap: break-word;'>" + htmlMessage + "</body></html>");
-
-        // Apply CSS to ensure text is black
-        editorPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-        editorPane.setContentType("text/html");
-        editorPane.setText("<html><body style='color: black; font-family: Arial;'>" + htmlMessage + "</body></html>");
-
-        return editorPane;
+        return label;
     }
 
     @Override
     public Dimension getPreferredSize() {
-        // Calculate dimensions for the bubble
-        FontMetrics fontMetrics = getFontMetrics(getFont());
-        int padding = 20; // Padding around the text
 
-        int maxWidth = 0;
-        int totalHeight = 0;
+        // Calculate the preferred size dynamically
+        Component label = getComponent(0);
+        Dimension size = label.getPreferredSize();
 
-        for (String line : message.split("\n")) {
-            int lineWidth = fontMetrics.stringWidth(line);
-            maxWidth = Math.max(maxWidth, lineWidth);
-            totalHeight += fontMetrics.getHeight();
-        }
+        // Add padding
+        int padding = 20;
+        int width = Math.min(size.width + padding, MAX_BUBBLE_WIDTH);
+        int height = size.height + padding;
 
-        int bubbleWidth = Math.min(maxWidth + padding * 2, MAX_BUBBLE_WIDTH);
-        int bubbleHeight = totalHeight + padding * 2;
 
-        return new Dimension(bubbleWidth, bubbleHeight);
+        return new Dimension(width, height);
     }
 
     /**
@@ -99,11 +113,13 @@ public class BubblePanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
+
         // Enable anti-aliasing for smooth edges
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Determine bubble color
-        Color bubbleColor = isUserMessage ? new Color(173, 216, 230) : new Color(211, 211, 211);
+        // Determine bubble color based on the user message
+        Color bubbleColor = isUserMessage ? new Color(173, 216, 230) : new Color(211, 211, 211); // Light blue for user, light gray for bot
+
 
         // Calculate the bubble shape
         int arcSize = 20; // Rounded corners
