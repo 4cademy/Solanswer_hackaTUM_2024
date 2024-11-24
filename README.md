@@ -4,7 +4,7 @@
 **This project consists of three parts.**
 
 1) A workflow to enhance LLMs with documentation and ecosystem-related data via Google Cloud's Retrieval Augmented Generation (RAG) system. As an example, we enhance `Gemini 1.5 Pro` with the `Solana Developer Documentation`.
-2) The `JetSetters Plugin` hocks into the Google Cloud backend to make use of our enhanced AI model. It is designed to provide developers with instant AI-driven documentation and code insights directly within the JetBrains IDEs. (see installation guide below)
+2) The `JetSetters Plugin` hooks into the Google Cloud backend to make use of our enhanced AI model. It is designed to provide developers with instant AI-driven documentation and code insights directly within the JetBrains IDEs. (see installation guide below)
 3) The `Solanswer Website` (https://solanswer.vercel.app/) provides a web version of our AI agent. It is capable of answering in-depth questions regarding the Solana Documentation.
 
 ## Features
