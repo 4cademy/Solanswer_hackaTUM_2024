@@ -9,9 +9,9 @@
 
 ## Features
 - **Instant Documentation Access:** Ask coding questions and receive real-time answers from the Solana Developer Docs or all other resources.
-- **Code Review Capabilities:** Automatically check code during commits and pull requests for adherence to coding principles.
-- **Secure Coding Guidance:** Provides examples and resources for writing secure code in blockchain environments.
 - **User-Friendly Interface:** Simple input/output fields for engaging with the AI chatbot.
+- **More in-depth answers:** In domain-specific questions (example case: Solana Dev Environment) our AI Agent gives more in-depth answers than the GitHub Copilot & JetBrains AI
+- **A Blueprint for other environments:** The workflow, plugin and website we built can be used plug-and-play with other vector datasets (i.e. other documentations, GitHub repos, ...)
 
 ## <a name="Installation"></a> Installation of `JetSetters Plugin`
 
